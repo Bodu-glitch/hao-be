@@ -1,8 +1,11 @@
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class CreateTrackDto {
-  @IsString(
-    { message: 'Title must be a string' }
-  )
-  title: string;
+  @IsNotEmpty()
+  @IsUUID()
+  trackId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  trackName: string;
 }

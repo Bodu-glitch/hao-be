@@ -4,6 +4,10 @@ import { AppService } from './app.service';
 import { TrackModule } from './domains/track/track.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PlaylistModule } from './domains/playlist/playlist.module';
+import { ProfileModule } from './domains/profile/profile.module';
+import { CategoryModule } from './domains/category/category.module';
+import { NotificationModule } from './domains/notification/notification.module';
 
 @Module({
   imports: [
@@ -23,7 +27,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       },
       inject: [ConfigService],
     }),
-    TrackModule],
+    TrackModule,
+    PlaylistModule,
+    ProfileModule,
+    CategoryModule,
+    NotificationModule],
   controllers: [AppController],
   providers: [AppService],
 })

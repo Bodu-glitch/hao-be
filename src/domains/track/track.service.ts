@@ -4,40 +4,60 @@ import { UpdateTrackDto } from './dto/update-track.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Track } from './entities/track.entity';
-import { parseBuffer, parseFile } from 'music-metadata';
-import { inspect } from 'util';
-import { join } from 'path';
+import { convertAudioToAac } from '../../utils/hls-converter';
+import { supabase } from '../../utils/supbabase';
 
 @Injectable()
 export class TrackService {
-  constructor(@InjectRepository(Track) private trackRepository: Repository<Track>) {}
+  constructor(
+    @InjectRepository(Track) private trackRepository: Repository<Track>,
+  ) {}
 
-  async create(createTrackDto: CreateTrackDto, file: Express.Multer.File) {
-    try {
-      const filePath = join(process.cwd(),'public', 'assets', 'tracks', file.filename);
-      const metadata= await parseFile(filePath, { duration: true });
-      console.log(metadata);
-
-      // write the file to the public/assets/tracks directory
-
-
-      const track = this.trackRepository.create({
-        title: createTrackDto.title,
-        duration: metadata.format.duration,
-        filePath: 'public/assets/tracks/' + file.filename,
-      });
-      return this.trackRepository.save(track);
-    }catch (e) {
-      throw new BadRequestException(e);
+  async create(
+    createTrackDto: CreateTrackDto,
+    categoryId: string,
+    userId: string,
+    filePath: string,
+    duration: number,
+    thumbnailPath?: string,
+  ) {
+    // supbase
+    const { data, error } = await supabase
+      .from('track')
+      .upsert({
+        id: createTrackDto.trackId,
+        title: createTrackDto.trackName,
+        ownerId: userId,
+        categoryId,
+        thumbnailPath: thumbnailPath == '' ? null : thumbnailPath,
+        filePath,
+        duration,
+        viewCount: 0,
+      })
+      .select();
+    if (error) {
+      console.log(error);
+      throw new BadRequestException(error);
     }
+    return data[0];
   }
 
   findAll() {
     return `This action returns all track`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} track`;
+  async findOne(id: number) {
+    return supabase
+      .from('track')
+      .select()
+      .eq('id', id)
+      .single()
+      .then(({ data, error }) => {
+        if (error) {
+          throw new BadRequestException(error);
+        }
+        return data;
+      });
   }
 
   update(id: number, updateTrackDto: UpdateTrackDto) {
@@ -46,5 +66,25 @@ export class TrackService {
 
   remove(id: number) {
     return `This action removes a #${id} track`;
+  }
+
+  async convertToAac(
+    inputPath: string,
+    opts: {
+      bitrate?: string; // '192k' | '256k'...
+      sampleRate?: number; // 44100 | 48000
+      channels?: number; // 1 | 2
+      outPath?: string; // đích .aac (tuỳ chọn)
+      overwrite?: boolean; // có ghi đè không
+    },
+  ) {
+    const out = await convertAudioToAac(inputPath, {
+      bitrate: opts.bitrate ?? '192k',
+      sampleRate: opts.sampleRate ?? 44100,
+      channels: opts.channels ?? 2,
+      outPath: opts.outPath, // có thể bỏ qua để auto đặt cùng thư mục
+      overwrite: opts.overwrite ?? false,
+    });
+    return out;
   }
 }

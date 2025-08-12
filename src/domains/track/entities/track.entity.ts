@@ -1,4 +1,15 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Playlist } from '../../playlist/entities/playlist.entity';
+import { Category } from '../../category/entities/category.entity';
+import { Profile } from '../../profile/entities/profile.entity';
+import { TrackEnum } from '../../../enums/track.enum';
 
 @Entity()
 export class Track {
@@ -13,4 +24,30 @@ export class Track {
 
   @Column('text')
   filePath: string;
+
+  @Column('int8')
+  viewCount: number;
+
+  @CreateDateColumn({ type: 'timestamptz' })
+  createdAt: Date;
+
+  @Column('text', { nullable: true })
+  thumbnailPath: string;
+
+  @ManyToOne(() => Profile, (profile) => profile.tracks, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
+  owner: Profile;
+
+  @ManyToMany(() => Playlist, (playlist) => playlist.tracks, {
+    nullable: true,
+  })
+  playlists: Playlist[];
+
+  @ManyToOne(() => Category, (category) => category.tracks, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
+  category: Category;
 }
