@@ -149,7 +149,7 @@ export class TrackController {
       const filePath = `${nameDir}/${file}`;
       const readStream = fs.createReadStream(`${filePath}`);
       readStream.pipe(writeStream, { end: false });
-      await finished(readStream); // ensure one finishes before starting next
+      await finished(readStream);
     }
 
     writeStream.end();
