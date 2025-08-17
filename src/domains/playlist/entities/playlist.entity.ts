@@ -1,6 +1,16 @@
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Profile } from '../../profile/entities/profile.entity';
 import { Track } from '../../track/entities/track.entity';
+import { PlaylistTrack } from '../../playlist_tracks/entities/playlist_track.entity';
 
 @Entity()
 export class Playlist {
@@ -17,9 +27,6 @@ export class Playlist {
   @JoinColumn()
   profile: Profile;
 
-  @ManyToMany(() => Track, (track) => track.playlists, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
-  tracks: Track[];
+  @OneToMany(() => PlaylistTrack, (playlistTrack) => playlistTrack.playlist)
+  playlistTracks: PlaylistTrack[];
 }

@@ -8,6 +8,7 @@ import { PlaylistModule } from './domains/playlist/playlist.module';
 import { ProfileModule } from './domains/profile/profile.module';
 import { CategoryModule } from './domains/category/category.module';
 import { NotificationModule } from './domains/notification/notification.module';
+import { PlaylistTracksModule } from './domains/playlist_tracks/playlist_tracks.module';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { NotificationModule } from './domains/notification/notification.module';
     PlaylistModule,
     ProfileModule,
     CategoryModule,
-    NotificationModule],
+    NotificationModule,
+    PlaylistTracksModule],
   controllers: [AppController],
   providers: [AppService],
 })

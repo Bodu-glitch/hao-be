@@ -4,12 +4,14 @@ import {
   Entity,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Playlist } from '../../playlist/entities/playlist.entity';
 import { Category } from '../../category/entities/category.entity';
 import { Profile } from '../../profile/entities/profile.entity';
 import { TrackEnum } from '../../../enums/track.enum';
+import { PlaylistTrack } from '../../playlist_tracks/entities/playlist_track.entity';
 
 @Entity()
 export class Track {
@@ -40,10 +42,8 @@ export class Track {
   })
   owner: Profile;
 
-  @ManyToMany(() => Playlist, (playlist) => playlist.tracks, {
-    nullable: true,
-  })
-  playlists: Playlist[];
+  @OneToMany(() => PlaylistTrack, (playlistTrack) => playlistTrack.track)
+  playlistTracks: PlaylistTrack[];
 
   @ManyToOne(() => Category, (category) => category.tracks, {
     onDelete: 'CASCADE',

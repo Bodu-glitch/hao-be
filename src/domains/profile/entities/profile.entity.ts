@@ -1,4 +1,11 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Playlist } from '../../playlist/entities/playlist.entity';
 import { Track } from '../../track/entities/track.entity';
 
@@ -8,14 +15,14 @@ export class Profile {
   id: string;
 
   @Column('text')
-  name: string
+  name: string;
 
   @OneToMany(() => Track, (track) => track.owner, {
     onDelete: 'CASCADE',
   })
   tracks: Track[];
 
-  @OneToMany(() => Playlist, (playlist) => playlist.tracks)
+  @OneToMany(() => Playlist, (playlist) => playlist.playlistTracks)
   playlists: Playlist[];
 
   @ManyToMany(() => Profile, (profile) => profile.following, {

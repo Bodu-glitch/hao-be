@@ -185,7 +185,7 @@ export class TrackController {
     if (thumbnail) {
       const { data: thumbnailData, error: thumbnailError } =
         await supabase.storage
-          .from('thumbnail')
+          .from('thumbnail' + '')
           .upload(`${trackId}/thumbnail.jpg`, thumbnail.buffer, {
             contentType: thumbnail.mimetype,
             upsert: true,
